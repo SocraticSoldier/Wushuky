@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { validateCredentials } from "@/lib/validation";
+import { safeRedirectPath } from "@/lib/routes";
 
 export type AuthState = { error: string } | null;
 
@@ -10,13 +12,6 @@ function readCredentials(formData: FormData) {
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   return { email, password };
-}
-
-function validate(email: string, password: string): string | null {
-  if (!email || !email.includes("@")) return "Please enter a valid email.";
-  if (password.length < 8)
-    return "Password must be at least 8 characters long.";
-  return null;
 }
 
 /**
@@ -35,18 +30,12 @@ async function tryAuth(
   }
 }
 
-function safeRedirectPath(input: FormDataEntryValue | null): string {
-  const value = typeof input === "string" ? input : "";
-  // Only allow internal, absolute paths to avoid open-redirects.
-  return value.startsWith("/") && !value.startsWith("//") ? value : "/dashboard";
-}
-
 export async function login(
   _prevState: AuthState,
   formData: FormData,
 ): Promise<AuthState> {
   const { email, password } = readCredentials(formData);
-  const validationError = validate(email, password);
+  const validationError = validateCredentials(email, password);
   if (validationError) return { error: validationError };
 
   const error = await tryAuth(async () => {
@@ -69,7 +58,7 @@ export async function signup(
   formData: FormData,
 ): Promise<AuthState> {
   const { email, password } = readCredentials(formData);
-  const validationError = validate(email, password);
+  const validationError = validateCredentials(email, password);
   if (validationError) return { error: validationError };
 
   const error = await tryAuth(async () => {

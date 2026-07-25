@@ -8,6 +8,32 @@ export interface ClassWithBookingState extends ClassRow {
 }
 
 /**
+ * Combines raw class rows with aggregate booked counts and the current user's
+ * bookings. Pure — exported for unit testing.
+ */
+export function annotateClasses(
+  classes: ClassRow[],
+  counts: { class_id: string; booked_count: number }[],
+  myBookedClassIds: string[],
+): ClassWithBookingState[] {
+  const countByClass = new Map<string, number>();
+  for (const row of counts) {
+    countByClass.set(row.class_id, Number(row.booked_count));
+  }
+  const bookedByUser = new Set(myBookedClassIds);
+
+  return classes.map((c) => {
+    const bookedCount = countByClass.get(c.id) ?? 0;
+    return {
+      ...c,
+      bookedCount,
+      spotsLeft: Math.max(0, c.capacity - bookedCount),
+      isBooked: bookedByUser.has(c.id),
+    };
+  });
+}
+
+/**
  * Upcoming classes annotated with live availability and whether the given user
  * is booked. Booked counts come from the `class_booked_counts` RPC (aggregate,
  * so it doesn't leak individual bookings under RLS); the user's own bookings
@@ -35,26 +61,11 @@ export async function getUpcomingClassesWithState(
         .neq("status", "canceled"),
     ]);
 
-    const classes = classesRes.data ?? [];
-
-    const countByClass = new Map<string, number>();
-    for (const row of countsRes.data ?? []) {
-      countByClass.set(row.class_id, Number(row.booked_count));
-    }
-
-    const bookedByUser = new Set(
+    return annotateClasses(
+      classesRes.data ?? [],
+      countsRes.data ?? [],
       (myBookingsRes.data ?? []).map((b) => b.class_id),
     );
-
-    return classes.map((c) => {
-      const bookedCount = countByClass.get(c.id) ?? 0;
-      return {
-        ...c,
-        bookedCount,
-        spotsLeft: Math.max(0, c.capacity - bookedCount),
-        isBooked: bookedByUser.has(c.id),
-      };
-    });
   } catch {
     return [];
   }

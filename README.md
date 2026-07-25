@@ -134,3 +134,27 @@ npx supabase gen types typescript --local > src/lib/supabase/types.ts
 | `npm run build` | Create a production build |
 | `npm run start` | Run the production build |
 | `npm run lint` | Lint the codebase |
+| `npm run typecheck` | Type-check without emitting |
+| `npm test` | Run the unit tests once |
+| `npm run test:watch` | Run tests in watch mode |
+| `npm run test:coverage` | Run tests with a coverage report |
+
+## Testing & CI
+
+Unit tests run on [Vitest](https://vitest.dev) and live next to the code they
+cover (`src/**/*.test.ts`). The suite targets the pure logic where the edge
+cases actually live:
+
+- `src/lib/routes.test.ts` — route protection and the **open-redirect guard**
+- `src/lib/validation.test.ts` — credential validation
+- `src/lib/data/classes.test.ts` — booking capacity / spots-left maths
+- `src/lib/format.test.ts` — currency and date formatting
+- `src/lib/supabase/env.test.ts` — the demo-mode configuration gate
+
+```bash
+npm test
+```
+
+`.github/workflows/ci.yml` runs lint → typecheck → test → build on every push to
+`main` and on all pull requests. CI sets placeholder Supabase env vars so the
+build succeeds without any secrets.

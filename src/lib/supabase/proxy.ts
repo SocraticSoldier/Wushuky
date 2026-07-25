@@ -1,12 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
-
-/** Route prefixes that require an authenticated user. */
-const PROTECTED_PREFIXES = ["/dashboard", "/classes", "/admin"];
-
-/** Auth routes an already–signed-in user should be redirected away from. */
-const AUTH_ROUTES = ["/login", "/signup"];
+import { isAuthPath, isProtectedPath } from "@/lib/routes";
 
 /**
  * Refreshes the Supabase auth session on every matched request and performs
@@ -54,10 +49,8 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
-  const isProtected = PROTECTED_PREFIXES.some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
-  );
-  const isAuthRoute = AUTH_ROUTES.includes(pathname);
+  const isProtected = isProtectedPath(pathname);
+  const isAuthRoute = isAuthPath(pathname);
 
   if (!user && isProtected) {
     const url = request.nextUrl.clone();
