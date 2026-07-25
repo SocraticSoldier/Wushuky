@@ -1,28 +1,80 @@
-export default function AdminPage() {
+import { getAdminData } from "@/lib/data/admin";
+import { SetupNotice } from "@/components/SetupNotice";
+import { formatDateTime } from "@/lib/format";
+
+export default async function AdminPage() {
+  const { stats, upcomingClasses } = await getAdminData();
+
+  const cards = [
+    { label: "Members", value: stats.memberCount },
+    { label: "Active memberships", value: stats.activeMemberCount },
+    { label: "Upcoming classes", value: stats.upcomingClassCount },
+  ];
+
   return (
     <div className="mx-auto max-w-4xl">
+      <SetupNotice />
+
       <h1 className="text-2xl font-bold tracking-tight">Admin</h1>
       <p className="mt-2 text-foreground/70">
         Manage members, classes, and payments.
       </p>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {[
-          { label: "Members", description: "View and manage member accounts." },
-          { label: "Classes", description: "Schedule and edit class sessions." },
-          { label: "Payments", description: "Review subscriptions and invoices." },
-        ].map((section) => (
+        {cards.map((card) => (
           <div
-            key={section.label}
+            key={card.label}
             className="rounded-xl border border-black/[.08] p-5 dark:border-white/[.1]"
           >
-            <p className="font-medium">{section.label}</p>
-            <p className="mt-1 text-sm text-foreground/60">
-              {section.description}
-            </p>
+            <p className="text-sm text-foreground/60">{card.label}</p>
+            <p className="mt-2 text-3xl font-semibold">{card.value}</p>
           </div>
         ))}
       </div>
+
+      <section className="mt-10">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold tracking-tight">
+            Upcoming schedule
+          </h2>
+        </div>
+        {upcomingClasses.length === 0 ? (
+          <p className="mt-3 text-sm text-foreground/60">
+            No classes scheduled. Add classes via Supabase or your admin tools.
+          </p>
+        ) : (
+          <div className="mt-4 overflow-x-auto rounded-xl border border-black/[.08] dark:border-white/[.1]">
+            <table className="w-full text-left text-sm">
+              <thead className="border-b border-black/[.08] text-foreground/60 dark:border-white/[.1]">
+                <tr>
+                  <th className="px-5 py-3 font-medium">Class</th>
+                  <th className="px-5 py-3 font-medium">When</th>
+                  <th className="px-5 py-3 font-medium">Instructor</th>
+                  <th className="px-5 py-3 font-medium">Level</th>
+                  <th className="px-5 py-3 font-medium">Capacity</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-black/[.06] dark:divide-white/[.08]">
+                {upcomingClasses.map((c) => (
+                  <tr key={c.id}>
+                    <td className="px-5 py-3 font-medium">{c.title}</td>
+                    <td className="px-5 py-3 text-foreground/70">
+                      {formatDateTime(c.starts_at)}
+                    </td>
+                    <td className="px-5 py-3 text-foreground/70">
+                      {c.instructor ?? "—"}
+                    </td>
+                    <td className="px-5 py-3 capitalize text-foreground/70">
+                      {c.level}
+                    </td>
+                    <td className="px-5 py-3 text-foreground/70">{c.capacity}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
     </div>
   );
 }

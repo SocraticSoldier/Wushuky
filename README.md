@@ -98,6 +98,34 @@ Auth is handled by Supabase using the `@supabase/ssr` cookie-based flow:
 Until you set real Supabase credentials in `.env.local`, the app still boots:
 public pages render and protected routes redirect to `/login`.
 
+## Database
+
+The schema lives in `supabase/`:
+
+- `supabase/migrations/0001_init.sql` — tables, Row Level Security policies, an
+  `is_admin()` helper, and a trigger that creates a `profiles` row on sign-up.
+- `supabase/seed.sql` — sample membership plans and classes.
+
+Tables: `profiles`, `membership_plans`, `memberships`, `classes`, `bookings`.
+TypeScript types mirroring the schema are in `src/lib/supabase/types.ts` and are
+wired into both Supabase clients for end-to-end type safety. Data access lives in
+`src/lib/data/` and degrades to safe empty states when the project isn't
+configured, so pages always render.
+
+Apply the schema with the [Supabase CLI](https://supabase.com/docs/guides/cli):
+
+```bash
+supabase db reset          # applies migrations + seed to your local stack
+# or, against a hosted project:
+supabase db push
+```
+
+After changing the schema, regenerate the types:
+
+```bash
+npx supabase gen types typescript --local > src/lib/supabase/types.ts
+```
+
 ## Scripts
 
 | Command | Description |

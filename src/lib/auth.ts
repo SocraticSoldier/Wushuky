@@ -38,14 +38,30 @@ export async function requireUser() {
  * Ensures the signed-in user is an admin. Redirects non-admins to the
  * dashboard.
  *
- * NOTE: role storage is project-specific. This checks a `role` claim on the
- * user's `app_metadata` (settable server-side via the Supabase admin API or a
- * DB trigger). Adjust to match your chosen roles model.
+ * Admin status is accepted from either a `role` claim on the user's
+ * `app_metadata` (a fast JWT check) or the `profiles.role` column (the source
+ * of truth in the schema). On any lookup failure we fail closed.
  */
 export async function requireAdmin() {
   const user = await requireUser();
-  const role = (user.app_metadata as { role?: string } | null)?.role;
-  if (role !== "admin") {
+
+  const claimRole = (user.app_metadata as { role?: string } | null)?.role;
+  if (claimRole === "admin") return user;
+
+  let profileRole: string | null = null;
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle();
+    profileRole = data?.role ?? null;
+  } catch {
+    profileRole = null;
+  }
+
+  if (profileRole !== "admin") {
     redirect("/dashboard");
   }
   return user;
