@@ -8,9 +8,9 @@ export default function MarketingPage() {
       <header className="flex items-center justify-between px-6 py-4 sm:px-10">
         <span className="text-lg font-semibold tracking-tight">Wushu Kai</span>
         <nav className="flex items-center gap-3">
-          <Link href="/dashboard">
+          <Link href="/login">
             <Button variant="ghost" size="sm">
-              Dashboard
+              Sign in
             </Button>
           </Link>
           <ThemeToggle />
@@ -26,12 +26,14 @@ export default function MarketingPage() {
           progress — all in one place.
         </p>
         <div className="flex flex-col gap-3 sm:flex-row">
-          <Link href="/dashboard">
+          <Link href="/signup">
             <Button size="lg">Get started</Button>
           </Link>
-          <Button size="lg" variant="outline">
-            Learn more
-          </Button>
+          <Link href="/login">
+            <Button size="lg" variant="outline">
+              Sign in
+            </Button>
+          </Link>
         </div>
       </main>
 
