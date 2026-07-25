@@ -171,6 +171,18 @@ export interface Database {
         Args: Record<PropertyKey, never>;
         Returns: boolean;
       };
+      book_class: {
+        Args: { p_class_id: string };
+        Returns: string;
+      };
+      cancel_booking: {
+        Args: { p_class_id: string };
+        Returns: string;
+      };
+      class_booked_counts: {
+        Args: Record<PropertyKey, never>;
+        Returns: { class_id: string; booked_count: number }[];
+      };
     };
     Enums: Record<never, never>;
     CompositeTypes: Record<never, never>;

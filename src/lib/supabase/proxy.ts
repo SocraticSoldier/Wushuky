@@ -3,7 +3,7 @@ import { createServerClient } from "@supabase/ssr";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 
 /** Route prefixes that require an authenticated user. */
-const PROTECTED_PREFIXES = ["/dashboard", "/admin"];
+const PROTECTED_PREFIXES = ["/dashboard", "/classes", "/admin"];
 
 /** Auth routes an already–signed-in user should be redirected away from. */
 const AUTH_ROUTES = ["/login", "/signup"];

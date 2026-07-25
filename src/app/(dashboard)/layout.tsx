@@ -26,6 +26,12 @@ export default async function DashboardLayout({
             Overview
           </Link>
           <Link
+            href="/classes"
+            className="text-foreground/80 hover:text-foreground"
+          >
+            Classes
+          </Link>
+          <Link
             href="/admin"
             className="text-foreground/80 hover:text-foreground"
           >

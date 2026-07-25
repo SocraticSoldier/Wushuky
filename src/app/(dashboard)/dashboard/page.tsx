@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { getDashboardData } from "@/lib/data/dashboard";
 import { SetupNotice } from "@/components/SetupNotice";
@@ -51,7 +52,17 @@ export default async function DashboardPage() {
       </div>
 
       <section className="mt-10">
-        <h2 className="text-lg font-semibold tracking-tight">Upcoming classes</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold tracking-tight">
+            Upcoming classes
+          </h2>
+          <Link
+            href="/classes"
+            className="text-sm font-medium text-foreground/70 underline hover:text-foreground"
+          >
+            Book classes
+          </Link>
+        </div>
         {upcomingClasses.length === 0 ? (
           <p className="mt-3 text-sm text-foreground/60">
             No upcoming classes scheduled yet.
