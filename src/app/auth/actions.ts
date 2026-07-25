@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { validateCredentials } from "@/lib/validation";
+import { validateCredentials } from "@/lib/validation/auth";
 import { safeRedirectPath } from "@/lib/routes";
 
 export type AuthState = { error: string } | null;

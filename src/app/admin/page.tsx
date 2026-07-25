@@ -1,5 +1,7 @@
 import { getAdminData } from "@/lib/data/admin";
 import { SetupNotice } from "@/components/SetupNotice";
+import { CreateClassForm } from "@/components/admin/CreateClassForm";
+import { DeleteClassButton } from "@/components/admin/DeleteClassButton";
 import { formatDateTime } from "@/lib/format";
 
 export default async function AdminPage() {
@@ -32,6 +34,10 @@ export default async function AdminPage() {
         ))}
       </div>
 
+      <div className="mt-10">
+        <CreateClassForm />
+      </div>
+
       <section className="mt-10">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold tracking-tight">
@@ -52,6 +58,9 @@ export default async function AdminPage() {
                   <th className="px-5 py-3 font-medium">Instructor</th>
                   <th className="px-5 py-3 font-medium">Level</th>
                   <th className="px-5 py-3 font-medium">Capacity</th>
+                  <th className="px-5 py-3 text-right font-medium">
+                    <span className="sr-only">Actions</span>
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-black/[.06] dark:divide-white/[.08]">
@@ -68,6 +77,9 @@ export default async function AdminPage() {
                       {c.level}
                     </td>
                     <td className="px-5 py-3 text-foreground/70">{c.capacity}</td>
+                    <td className="px-5 py-3 text-right">
+                      <DeleteClassButton classId={c.id} title={c.title} />
+                    </td>
                   </tr>
                 ))}
               </tbody>

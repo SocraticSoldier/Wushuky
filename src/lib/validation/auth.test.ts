@@ -3,7 +3,7 @@ import {
   MIN_PASSWORD_LENGTH,
   isValidEmail,
   validateCredentials,
-} from "@/lib/validation";
+} from "@/lib/validation/auth";
 
 describe("isValidEmail", () => {
   it("accepts ordinary addresses", () => {

@@ -98,6 +98,18 @@ Auth is handled by Supabase using the `@supabase/ssr` cookie-based flow:
 Until you set real Supabase credentials in `.env.local`, the app still boots:
 public pages render and protected routes redirect to `/login`.
 
+## Features
+
+- **Marketing page** at `/` with sign-in / sign-up calls to action.
+- **Member dashboard** at `/dashboard` — membership status, classes booked this
+  month, rank, and upcoming classes.
+- **Class booking** at `/classes` — book or cancel a spot. Capacity is enforced
+  atomically in the database (`book_class` locks the class row), so two members
+  racing for the last spot cannot both win.
+- **Admin** at `/admin` — member and membership counts, plus scheduling and
+  deleting classes. Admin actions re-verify the caller server-side with
+  `requireAdmin()`, backed by admin-only RLS policies.
+
 ## Database
 
 The schema lives in `supabase/`:
@@ -146,7 +158,8 @@ cover (`src/**/*.test.ts`). The suite targets the pure logic where the edge
 cases actually live:
 
 - `src/lib/routes.test.ts` — route protection and the **open-redirect guard**
-- `src/lib/validation.test.ts` — credential validation
+- `src/lib/validation/auth.test.ts` — credential validation
+- `src/lib/validation/class.test.ts` — class scheduling input validation
 - `src/lib/data/classes.test.ts` — booking capacity / spots-left maths
 - `src/lib/format.test.ts` — currency and date formatting
 - `src/lib/supabase/env.test.ts` — the demo-mode configuration gate
