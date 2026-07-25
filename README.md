@@ -91,6 +91,19 @@ Auth is handled by Supabase using the `@supabase/ssr` cookie-based flow:
   server — the proxy redirect is only an optimisation, per the Next.js
   data-security guidance.
 - **`/login` and `/signup`** post to Server Actions in `src/app/auth/actions.ts`.
+- **`/auth/confirm`** is the callback for every link Supabase emails — signup
+  confirmation, magic links, password recovery and email changes. It exchanges
+  the `token_hash` for a session via `verifyOtp`, then forwards the user to the
+  `next` destination (sanitised through `safeRedirectPath`, so a crafted link
+  cannot become an open redirect). Failures land back on `/login?error=…`.
+- **Password reset**: `/forgot-password` sends the email (responding
+  identically whether or not the address exists, to avoid account enumeration);
+  the emailed link lands on `/auth/confirm` and forwards to `/reset-password`.
+
+> **Supabase configuration:** set your site URL and add
+> `{SITE_URL}/auth/confirm` to the allowed redirect URLs in
+> *Authentication → URL Configuration*, otherwise the emailed links are
+> rejected.
 - **Admin role** is read from `user.app_metadata.role === "admin"`. Adjust
   `requireAdmin()` to match your chosen roles model (custom claim, DB table,
   etc.).

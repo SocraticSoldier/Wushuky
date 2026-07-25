@@ -4,10 +4,25 @@
  * Kept free of Next.js imports so it can be unit tested directly.
  */
 
-/** Route prefixes that require an authenticated user. */
-export const PROTECTED_PREFIXES = ["/dashboard", "/classes", "/admin"] as const;
+/**
+ * Route prefixes that require an authenticated user.
+ *
+ * `/reset-password` is included because the recovery link establishes a session
+ * via /auth/confirm before landing there — an anonymous visitor has no password
+ * to change and is sent to /login.
+ */
+export const PROTECTED_PREFIXES = [
+  "/dashboard",
+  "/classes",
+  "/admin",
+  "/reset-password",
+] as const;
 
-/** Auth routes an already–signed-in user should be redirected away from. */
+/**
+ * Auth routes an already–signed-in user should be redirected away from.
+ * `/forgot-password` is deliberately absent: a signed-in user may still want to
+ * trigger a reset email.
+ */
 export const AUTH_ROUTES = ["/login", "/signup"] as const;
 
 /**

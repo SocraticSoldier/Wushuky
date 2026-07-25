@@ -1,12 +1,31 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { validateCredentials } from "@/lib/validation/auth";
+import {
+  MIN_PASSWORD_LENGTH,
+  isValidEmail,
+  validateCredentials,
+} from "@/lib/validation/auth";
 import { safeRedirectPath } from "@/lib/routes";
 
 export type AuthState = { error: string } | null;
+
+/** Result shape for flows that stay on the page and report progress inline. */
+export type AuthFeedback = { error: string } | { success: string } | null;
+
+/** Best-effort absolute origin for building email redirect links. */
+async function getOrigin(): Promise<string | null> {
+  const h = await headers();
+  const origin = h.get("origin");
+  if (origin) return origin;
+  const host = h.get("host");
+  if (!host) return null;
+  const proto = h.get("x-forwarded-proto") ?? "https";
+  return `${proto}://${host}`;
+}
 
 function readCredentials(formData: FormData) {
   const email = String(formData.get("email") ?? "").trim();
@@ -81,4 +100,65 @@ export async function signOut() {
   });
   revalidatePath("/", "layout");
   redirect("/login");
+}
+
+/**
+ * Sends a password-recovery email. Always reports success, even when the email
+ * is unknown, so this cannot be used to enumerate registered accounts.
+ */
+export async function requestPasswordReset(
+  _prevState: AuthFeedback,
+  formData: FormData,
+): Promise<AuthFeedback> {
+  const email = String(formData.get("email") ?? "").trim();
+  if (!isValidEmail(email)) return { error: "Please enter a valid email." };
+
+  const genericSuccess = {
+    success: "If that email is registered, a reset link is on its way.",
+  };
+
+  try {
+    const origin = await getOrigin();
+    const supabase = await createClient();
+    await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: origin
+        ? `${origin}/auth/confirm?next=/reset-password`
+        : undefined,
+    });
+  } catch {
+    return {
+      error: "We couldn't send that email right now. Please try again later.",
+    };
+  }
+
+  return genericSuccess;
+}
+
+/**
+ * Sets a new password for the signed-in user. Reached after following a
+ * recovery link, which establishes a session via /auth/confirm.
+ */
+export async function updatePassword(
+  _prevState: AuthState,
+  formData: FormData,
+): Promise<AuthState> {
+  const password = String(formData.get("password") ?? "");
+  const confirm = String(formData.get("confirmPassword") ?? "");
+
+  if (password.length < MIN_PASSWORD_LENGTH) {
+    return {
+      error: `Password must be at least ${MIN_PASSWORD_LENGTH} characters long.`,
+    };
+  }
+  if (password !== confirm) return { error: "Passwords do not match." };
+
+  const error = await tryAuth(async () => {
+    const supabase = await createClient();
+    const { error } = await supabase.auth.updateUser({ password });
+    return error?.message ?? null;
+  });
+  if (error) return { error };
+
+  revalidatePath("/", "layout");
+  redirect("/dashboard");
 }

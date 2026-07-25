@@ -13,10 +13,17 @@ describe("isProtectedPath", () => {
     expect(isProtectedPath("/admin/members/123")).toBe(true);
   });
 
+  it("protects the password reset form", () => {
+    // Reached with a session created by the recovery link.
+    expect(isProtectedPath("/reset-password")).toBe(true);
+  });
+
   it("does not match public routes", () => {
     expect(isProtectedPath("/")).toBe(false);
     expect(isProtectedPath("/login")).toBe(false);
     expect(isProtectedPath("/signup")).toBe(false);
+    // Requesting a reset must work while signed out.
+    expect(isProtectedPath("/forgot-password")).toBe(false);
   });
 
   it("does not treat a prefix collision as protected", () => {
@@ -77,5 +84,28 @@ describe("safeRedirectPath", () => {
 
   it("honours a custom fallback", () => {
     expect(safeRedirectPath("https://evil.com", "/")).toBe("/");
+  });
+
+  // /auth/confirm builds its final destination with `new URL(next, origin)`.
+  // That is only safe if a sanitised path can never resolve off-origin.
+  it("always resolves to the same origin when used as a URL base path", () => {
+    const origin = "https://wushukai.example";
+    const hostile = [
+      "//evil.com",
+      "//evil.com/path",
+      "https://evil.com",
+      "http://evil.com",
+      "javascript:alert(1)",
+      "/\\evil.com",
+      "\\\\evil.com",
+      "/foo\nSet-Cookie: x=1",
+      "",
+      "   ",
+    ];
+
+    for (const input of hostile) {
+      const resolved = new URL(safeRedirectPath(input), origin);
+      expect(resolved.origin).toBe(origin);
+    }
   });
 });
