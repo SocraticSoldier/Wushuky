@@ -91,7 +91,7 @@ describe("safeRedirectPath", () => {
   // /auth/confirm builds its final destination with `new URL(next, origin)`.
   // That is only safe if a sanitised path can never resolve off-origin.
   it("always resolves to the same origin when used as a URL base path", () => {
-    const origin = "https://wushukai.example";
+    const origin = "https://wushuky.example";
     const hostile = [
       "//evil.com",
       "//evil.com/path",

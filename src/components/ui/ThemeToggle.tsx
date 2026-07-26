@@ -4,7 +4,7 @@ import * as React from "react";
 import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
-const THEME_EVENT = "wushukai:themechange";
+const THEME_EVENT = "wushuky:themechange";
 
 function subscribe(callback: () => void) {
   window.addEventListener(THEME_EVENT, callback);

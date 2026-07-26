@@ -6,7 +6,9 @@ export default function MarketingPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <header className="flex items-center justify-between px-6 py-4 sm:px-10">
-        <span className="text-lg font-semibold tracking-tight">Wushu Kai</span>
+        <span className="text-lg font-semibold tracking-tight whitespace-nowrap">
+          Wu Shu Ky Kickboxing
+        </span>
         <nav className="flex items-center gap-3">
           <Link href="/login">
             <Button variant="ghost" size="sm">
@@ -22,7 +24,7 @@ export default function MarketingPage() {
           Train with purpose.
         </h1>
         <p className="max-w-xl text-base text-foreground/70 sm:text-lg">
-          Wushu Kai is your home for martial arts training, memberships, and
+          Wu Shu Ky Kickboxing is your home for training, memberships, and
           progress — all in one place.
         </p>
         <div className="flex flex-col gap-3 sm:flex-row">
@@ -38,7 +40,7 @@ export default function MarketingPage() {
       </main>
 
       <footer className="px-6 py-6 text-center text-sm text-foreground/50">
-        © {new Date().getFullYear()} Wushu Kai. All rights reserved.
+        © {new Date().getFullYear()} Wu Shu Ky Kickboxing. All rights reserved.
       </footer>
     </div>
   );

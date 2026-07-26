@@ -1,4 +1,4 @@
--- Wushu Kai — class booking
+-- Wu Shu Ky Kickboxing — class booking
 -- Booking must enforce capacity atomically and cannot be done purely from the
 -- client: RLS lets a member see only their own bookings, so neither the live
 -- booked-count nor a race-free capacity check are possible client-side. These

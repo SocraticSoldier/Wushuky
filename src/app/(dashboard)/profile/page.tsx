@@ -28,7 +28,7 @@ export default async function ProfilePage() {
 
       <h1 className="text-2xl font-bold tracking-tight">Your profile</h1>
       <p className="mt-2 text-foreground/70">
-        Update how you appear across Wushu Kai.
+        Update how you appear across Wu Shu Ky Kickboxing.
       </p>
 
       <dl className="mt-6 rounded-xl border border-black/[.08] px-5 py-4 text-sm dark:border-white/[.1]">

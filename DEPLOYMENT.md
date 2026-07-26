@@ -40,7 +40,7 @@ order by tablename;
 
 Dashboard → **Authentication → URL Configuration**:
 
-- **Site URL**: your production URL (e.g. `https://wushukai.com`)
+- **Site URL**: your production URL (e.g. `https://wushuky.com`)
 - **Redirect URLs**: add both
   - `https://<your-domain>/auth/confirm`
   - `https://<your-vercel-preview>.vercel.app/auth/confirm`

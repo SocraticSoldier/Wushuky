@@ -13,8 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Wushu Kai",
-  description: "Wushu Kai — martial arts training and membership platform.",
+  title: "Wu Shu Ky Kickboxing",
+  description:
+    "Kickboxing classes, memberships, and training progress — all in one place.",
 };
 
 // Applies the persisted theme before first paint to avoid a flash of the

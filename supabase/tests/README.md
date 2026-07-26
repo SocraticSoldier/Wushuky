@@ -16,14 +16,14 @@ under concurrency.
 sudo apt-get install -y postgresql
 sudo pg_ctlcluster 16 main start
 
-createdb() { sudo -u postgres psql -qc "drop database if exists wushukai;" \
-                                  -c "create database wushukai;"; }
+createdb() { sudo -u postgres psql -qc "drop database if exists wushuky;" \
+                                  -c "create database wushuky;"; }
 createdb
-sudo -u postgres psql -q -d wushukai < supabase/tests/00_bootstrap.sql
+sudo -u postgres psql -q -d wushuky < supabase/tests/00_bootstrap.sql
 for f in supabase/migrations/*.sql; do
-  sudo -u postgres psql -q -v ON_ERROR_STOP=1 -d wushukai < "$f"
+  sudo -u postgres psql -q -v ON_ERROR_STOP=1 -d wushuky < "$f"
 done
-sudo -u postgres psql -q -d wushukai < supabase/tests/rls_test.sql \
+sudo -u postgres psql -q -d wushuky < supabase/tests/rls_test.sql \
   2>&1 | grep -E "PASS|FAIL"
 ```
 

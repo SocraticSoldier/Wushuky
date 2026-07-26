@@ -10,13 +10,13 @@ export default function SignupPage() {
           href="/"
           className="mb-8 block text-center text-lg font-semibold tracking-tight"
         >
-          Wushu Kai
+          Wu Shu Ky Kickboxing
         </Link>
         <h1 className="mb-1 text-2xl font-bold tracking-tight">
           Create your account
         </h1>
         <p className="mb-6 text-sm text-foreground/60">
-          Start training with Wushu Kai today.
+          Start training with Wu Shu Ky Kickboxing today.
         </p>
 
         <AuthForm mode="signup" action={signup} />

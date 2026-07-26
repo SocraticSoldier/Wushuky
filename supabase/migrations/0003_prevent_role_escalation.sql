@@ -1,4 +1,4 @@
--- Wushu Kai — close a privilege-escalation hole on public.profiles
+-- Wu Shu Ky Kickboxing — close a privilege-escalation hole on public.profiles
 --
 -- The 0001 policy was:
 --   for update using (id = auth.uid() or public.is_admin())

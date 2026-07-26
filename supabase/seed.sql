@@ -1,4 +1,4 @@
--- Wushu Kai — seed data
+-- Wu Shu Ky Kickboxing — seed data
 -- Safe to run repeatedly: plans are keyed by name, classes are only seeded when
 -- the classes table is empty.
 

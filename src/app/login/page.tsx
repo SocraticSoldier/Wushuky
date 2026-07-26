@@ -21,7 +21,7 @@ export default async function LoginPage({
           href="/"
           className="mb-8 block text-center text-lg font-semibold tracking-tight"
         >
-          Wushu Kai
+          Wu Shu Ky Kickboxing
         </Link>
         <h1 className="mb-1 text-2xl font-bold tracking-tight">Welcome back</h1>
         <p className="mb-6 text-sm text-foreground/60">

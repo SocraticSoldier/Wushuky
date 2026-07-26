@@ -1,4 +1,4 @@
-# Wushu Kai
+# Wu Shu Ky Kickboxing
 
 A martial arts training and membership platform built with Next.js, TypeScript,
 Tailwind CSS, and Supabase.

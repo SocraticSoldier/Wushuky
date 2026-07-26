@@ -1,4 +1,4 @@
--- Wushu Kai — initial schema
+-- Wu Shu Ky Kickboxing — initial schema
 -- Membership platform: profiles, membership plans, memberships, classes, bookings.
 -- Row Level Security is enabled on every table with least-privilege policies.
 

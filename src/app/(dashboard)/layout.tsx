@@ -15,8 +15,11 @@ export default async function DashboardLayout({
   return (
     <div className="flex min-h-screen flex-col">
       <header className="flex items-center justify-between border-b border-black/[.08] px-6 py-4 dark:border-white/[.1]">
-        <Link href="/" className="text-lg font-semibold tracking-tight">
-          Wushu Kai
+        <Link
+          href="/"
+          className="text-lg font-semibold tracking-tight whitespace-nowrap"
+        >
+          Wu Shu Ky Kickboxing
         </Link>
         <nav className="flex items-center gap-4 text-sm">
           <Link

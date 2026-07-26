@@ -1,4 +1,4 @@
--- Wushu Kai — allow bootstrapping the first admin
+-- Wu Shu Ky Kickboxing — allow bootstrapping the first admin
 --
 -- Migration 0003 guarded the profiles.role column with a trigger that requires
 -- the caller to already be an admin. That is correct for end-user requests, but
