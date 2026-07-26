@@ -104,9 +104,9 @@ Auth is handled by Supabase using the `@supabase/ssr` cookie-based flow:
 > `{SITE_URL}/auth/confirm` to the allowed redirect URLs in
 > *Authentication → URL Configuration*, otherwise the emailed links are
 > rejected.
-- **Admin role** is read from `user.app_metadata.role === "admin"`. Adjust
-  `requireAdmin()` to match your chosen roles model (custom claim, DB table,
-  etc.).
+- **Admin role** is accepted from either an `app_metadata.role` JWT claim (a
+  fast path) or the `profiles.role` column, which is the source of truth. Grant
+  it with the SQL in *Going live* below.
 
 Until you set real Supabase credentials in `.env.local`, the app still boots:
 public pages render and protected routes redirect to `/login`.
@@ -138,12 +138,24 @@ The schema lives in `supabase/`:
   `cancel_booking` and `class_booked_counts` functions.
 - `supabase/migrations/0003_prevent_role_escalation.sql` — blocks members from
   promoting themselves to admin (see the note below).
+- `supabase/migrations/0004_allow_admin_bootstrap.sql` — lets privileged direct
+  access (the SQL editor / `service_role`) create the first admin, which 0003
+  had accidentally made impossible.
 - `supabase/seed.sql` — sample membership plans and classes.
 
 > **Why 0003 exists:** the original update policy on `profiles` had no
 > `WITH CHECK` clause, so Postgres reused the `USING` expression for the new
 > row. A member could update their own row and set `role = 'admin'` — and the
 > anon key is public. A trigger now rejects role changes from non-admins.
+>
+> **Why 0004 exists:** 0003 was too strict — it required an existing admin to
+> create an admin, so the first promotion was impossible even from the SQL
+> editor. 0004 exempts callers with no end-user JWT (SQL editor, `service_role`,
+> superuser). Members are still blocked, because anonymous requests never pass
+> the RLS policy in the first place.
+
+The policies are verified against a real PostgreSQL instance — see
+`supabase/tests/`.
 
 Tables: `profiles`, `membership_plans`, `memberships`, `classes`, `bookings`.
 TypeScript types mirroring the schema are in `src/lib/supabase/types.ts` and are
@@ -177,6 +189,12 @@ npx supabase gen types typescript --local > src/lib/supabase/types.ts
 | `npm test` | Run the unit tests once |
 | `npm run test:watch` | Run tests in watch mode |
 | `npm run test:coverage` | Run tests with a coverage report |
+
+## Going live
+
+See **[DEPLOYMENT.md](./DEPLOYMENT.md)** for the full runbook: applying
+migrations, configuring Auth redirect URLs, deploying to Vercel, granting
+yourself admin, and pointing a domain.
 
 ## Testing & CI
 
