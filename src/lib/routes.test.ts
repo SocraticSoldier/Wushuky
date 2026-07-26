@@ -5,6 +5,8 @@ describe("isProtectedPath", () => {
   it("matches protected roots exactly", () => {
     expect(isProtectedPath("/dashboard")).toBe(true);
     expect(isProtectedPath("/classes")).toBe(true);
+    expect(isProtectedPath("/bookings")).toBe(true);
+    expect(isProtectedPath("/profile")).toBe(true);
     expect(isProtectedPath("/admin")).toBe(true);
   });
 

@@ -119,6 +119,11 @@ public pages render and protected routes redirect to `/login`.
 - **Class booking** at `/classes` — book or cancel a spot. Capacity is enforced
   atomically in the database (`book_class` locks the class row), so two members
   racing for the last spot cannot both win.
+- **My bookings** at `/bookings` — upcoming bookings (cancellable) and
+  attendance history.
+- **Profile** at `/profile` — edit your display name and belt. `role` is
+  deliberately not editable here; the database rejects role changes from
+  non-admins.
 - **Admin** at `/admin` — member and membership counts, plus scheduling and
   deleting classes. Admin actions re-verify the caller server-side with
   `requireAdmin()`, backed by admin-only RLS policies.
@@ -129,7 +134,16 @@ The schema lives in `supabase/`:
 
 - `supabase/migrations/0001_init.sql` — tables, Row Level Security policies, an
   `is_admin()` helper, and a trigger that creates a `profiles` row on sign-up.
+- `supabase/migrations/0002_class_booking.sql` — `book_class`,
+  `cancel_booking` and `class_booked_counts` functions.
+- `supabase/migrations/0003_prevent_role_escalation.sql` — blocks members from
+  promoting themselves to admin (see the note below).
 - `supabase/seed.sql` — sample membership plans and classes.
+
+> **Why 0003 exists:** the original update policy on `profiles` had no
+> `WITH CHECK` clause, so Postgres reused the `USING` expression for the new
+> row. A member could update their own row and set `role = 'admin'` — and the
+> anon key is public. A trigger now rejects role changes from non-admins.
 
 Tables: `profiles`, `membership_plans`, `memberships`, `classes`, `bookings`.
 TypeScript types mirroring the schema are in `src/lib/supabase/types.ts` and are

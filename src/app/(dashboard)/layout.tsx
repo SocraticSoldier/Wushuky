@@ -32,14 +32,23 @@ export default async function DashboardLayout({
             Classes
           </Link>
           <Link
+            href="/bookings"
+            className="text-foreground/80 hover:text-foreground"
+          >
+            My bookings
+          </Link>
+          <Link
             href="/admin"
             className="text-foreground/80 hover:text-foreground"
           >
             Admin
           </Link>
-          <span className="hidden text-foreground/50 sm:inline">
+          <Link
+            href="/profile"
+            className="hidden text-foreground/50 hover:text-foreground sm:inline"
+          >
             {user.email}
-          </span>
+          </Link>
           <ThemeToggle />
           <form action={signOut}>
             <Button type="submit" variant="ghost" size="sm">

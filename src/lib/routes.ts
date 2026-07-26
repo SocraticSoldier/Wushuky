@@ -14,6 +14,8 @@
 export const PROTECTED_PREFIXES = [
   "/dashboard",
   "/classes",
+  "/bookings",
+  "/profile",
   "/admin",
   "/reset-password",
 ] as const;
