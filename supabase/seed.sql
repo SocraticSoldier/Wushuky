@@ -1,13 +1,14 @@
 -- Wu Shu Ky Kickboxing — seed data
--- Safe to run repeatedly: plans are keyed by name, classes are only seeded when
--- the classes table is empty.
+-- Safe to run repeatedly: plan names are unique (migration 0005) so the
+-- on-conflict clause absorbs repeats, and classes are only seeded when the
+-- classes table is empty.
 
 insert into public.membership_plans (name, description, price_cents, currency, billing_interval)
 values
   ('Drop-in', 'Pay-as-you-go access to a single class.', 1500, 'GBP', 'month'),
   ('Monthly', 'Unlimited classes, billed monthly.', 5900, 'GBP', 'month'),
   ('Annual', 'Unlimited classes, billed yearly (two months free).', 59000, 'GBP', 'year')
-on conflict do nothing;
+on conflict (name) do nothing;
 
 -- Seed a handful of upcoming classes only if none exist yet.
 insert into public.classes (title, description, instructor, level, starts_at, duration_minutes, capacity)

@@ -7,23 +7,21 @@ wait until the rest is confirmed working.
 
 ## 1. Apply the database schema
 
-If you have the Supabase CLI:
+Open the **SQL Editor** in your Supabase dashboard, paste in the entire
+contents of **`supabase/setup.sql`**, and hit Run. That one file contains every
+migration plus the seed data, in the right order.
+
+Running it more than once is safe — it will not duplicate anything.
+
+<details>
+<summary>Prefer the Supabase CLI?</summary>
 
 ```bash
 supabase link --project-ref <your-project-ref>
 supabase db push
 ```
 
-Otherwise use the **SQL Editor** in the Supabase dashboard and run these files
-**in order**, one at a time, checking each succeeds before the next:
-
-1. `supabase/migrations/0001_init.sql`
-2. `supabase/migrations/0002_class_booking.sql`
-3. `supabase/migrations/0003_prevent_role_escalation.sql`
-4. `supabase/migrations/0004_allow_admin_bootstrap.sql`
-5. `supabase/seed.sql` *(optional — sample plans and classes)*
-
-Order matters: 0002 depends on tables from 0001, and 0004 corrects 0003.
+</details>
 
 **Verify** — this should return five rows, all with `rowsecurity = t`:
 
@@ -32,6 +30,13 @@ select tablename, rowsecurity
 from pg_tables
 where schemaname = 'public'
 order by tablename;
+```
+
+And this should return 3 plans and 4 classes:
+
+```sql
+select (select count(*) from public.membership_plans) as plans,
+       (select count(*) from public.classes)          as classes;
 ```
 
 ---

@@ -122,37 +122,50 @@ alter table public.classes enable row level security;
 alter table public.bookings enable row level security;
 
 -- profiles: users see/update their own; admins see/manage all.
+drop policy if exists "profiles_select_own_or_admin" on public.profiles;
 create policy "profiles_select_own_or_admin" on public.profiles
   for select using (id = auth.uid() or public.is_admin());
+drop policy if exists "profiles_update_own_or_admin" on public.profiles;
 create policy "profiles_update_own_or_admin" on public.profiles
   for update using (id = auth.uid() or public.is_admin());
+drop policy if exists "profiles_admin_delete" on public.profiles;
 create policy "profiles_admin_delete" on public.profiles
   for delete using (public.is_admin());
 
 -- membership_plans: anyone may read active plans; admins manage.
+drop policy if exists "plans_select_all" on public.membership_plans;
 create policy "plans_select_all" on public.membership_plans
   for select using (true);
+drop policy if exists "plans_admin_write" on public.membership_plans;
 create policy "plans_admin_write" on public.membership_plans
   for all using (public.is_admin()) with check (public.is_admin());
 
 -- memberships: users read their own; admins manage all.
+drop policy if exists "memberships_select_own_or_admin" on public.memberships;
 create policy "memberships_select_own_or_admin" on public.memberships
   for select using (user_id = auth.uid() or public.is_admin());
+drop policy if exists "memberships_admin_write" on public.memberships;
 create policy "memberships_admin_write" on public.memberships
   for all using (public.is_admin()) with check (public.is_admin());
 
 -- classes: any authenticated user may read; admins manage.
+drop policy if exists "classes_select_authenticated" on public.classes;
 create policy "classes_select_authenticated" on public.classes
   for select using (auth.uid() is not null);
+drop policy if exists "classes_admin_write" on public.classes;
 create policy "classes_admin_write" on public.classes
   for all using (public.is_admin()) with check (public.is_admin());
 
 -- bookings: users manage their own; admins read all.
+drop policy if exists "bookings_select_own_or_admin" on public.bookings;
 create policy "bookings_select_own_or_admin" on public.bookings
   for select using (user_id = auth.uid() or public.is_admin());
+drop policy if exists "bookings_insert_own" on public.bookings;
 create policy "bookings_insert_own" on public.bookings
   for insert with check (user_id = auth.uid());
+drop policy if exists "bookings_update_own_or_admin" on public.bookings;
 create policy "bookings_update_own_or_admin" on public.bookings
   for update using (user_id = auth.uid() or public.is_admin());
+drop policy if exists "bookings_delete_own_or_admin" on public.bookings;
 create policy "bookings_delete_own_or_admin" on public.bookings
   for delete using (user_id = auth.uid() or public.is_admin());
