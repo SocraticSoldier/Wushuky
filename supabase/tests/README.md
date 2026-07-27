@@ -41,6 +41,14 @@ will trip unique constraints on a second run.
 | Admin | admins can read all profiles, change roles, and manage classes |
 | Capacity | a full class returns `full`; cancelling frees the spot |
 | Anonymous | signed-out callers read nothing |
+| Bypass | members cannot INSERT or UPDATE bookings directly, so `book_class` cannot be side-stepped (migration 0006) |
+
+## Adversarial suite
+
+`attack.sql` is the companion suite: it tries to *break* the policies rather
+than confirm they work. It found three real holes that the happy-path tests
+missed — direct booking inserts, moving a booking into a full class, and
+self-marked attendance. Run it the same way, against a fresh database.
 
 ## Concurrency
 

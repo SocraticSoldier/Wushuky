@@ -118,7 +118,8 @@ public pages render and protected routes redirect to `/login`.
   month, rank, and upcoming classes.
 - **Class booking** at `/classes` — book or cancel a spot. Capacity is enforced
   atomically in the database (`book_class` locks the class row), so two members
-  racing for the last spot cannot both win.
+  racing for the last spot cannot both win. Members cannot write to `bookings`
+  directly, so the function cannot be side-stepped with the public anon key.
 - **My bookings** at `/bookings` — upcoming bookings (cancellable) and
   attendance history.
 - **Profile** at `/profile` — edit your display name and belt. `role` is
@@ -141,7 +142,13 @@ The schema lives in `supabase/`:
 - `supabase/migrations/0004_allow_admin_bootstrap.sql` — lets privileged direct
   access (the SQL editor / `service_role`) create the first admin, which 0003
   had accidentally made impossible.
+- `supabase/migrations/0005_unique_plan_name.sql` — unique plan names, so
+  re-running the seed stops duplicating the price list.
+- `supabase/migrations/0006_lock_down_bookings.sql` — members can no longer
+  write to `bookings` directly, so capacity cannot be bypassed.
 - `supabase/seed.sql` — sample membership plans and classes.
+- `supabase/setup.sql` — all of the above concatenated; paste this into the
+  Supabase SQL Editor in one go.
 
 > **Why 0003 exists:** the original update policy on `profiles` had no
 > `WITH CHECK` clause, so Postgres reused the `USING` expression for the new
@@ -154,8 +161,16 @@ The schema lives in `supabase/`:
 > superuser). Members are still blocked, because anonymous requests never pass
 > the RLS policy in the first place.
 
+> **Why 0006 exists:** `book_class()` enforced capacity correctly, but nothing
+> obliged anyone to call it. `bookings` allowed members to INSERT rows directly
+> (no capacity check) and to UPDATE `class_id` on a booking they owned, moving
+> it into a full class. A one-seat class was driven to three bookings this way
+> with the public anon key. Writes now go through the functions, and a trigger
+> enforces capacity for every writer.
+
 The policies are verified against a real PostgreSQL instance — see
-`supabase/tests/`.
+`supabase/tests/`, which holds both the happy-path suite and an adversarial
+suite that actively tries to break them.
 
 Tables: `profiles`, `membership_plans`, `memberships`, `classes`, `bookings`.
 TypeScript types mirroring the schema are in `src/lib/supabase/types.ts` and are

@@ -29,14 +29,23 @@ function isClassLevel(value: string): value is ClassLevel {
  * unit tested and reused; the Server Action calls this before touching the
  * database.
  */
-export function parseClassInput(input: {
-  title?: unknown;
-  instructor?: unknown;
-  level?: unknown;
-  startsAt?: unknown;
-  durationMinutes?: unknown;
-  capacity?: unknown;
-}): ClassParseResult {
+/**
+ * How far in the past a start time may be before it is rejected. A small
+ * window absorbs clock skew and the seconds spent filling in the form.
+ */
+export const PAST_GRACE_MINUTES = 5;
+
+export function parseClassInput(
+  input: {
+    title?: unknown;
+    instructor?: unknown;
+    level?: unknown;
+    startsAt?: unknown;
+    durationMinutes?: unknown;
+    capacity?: unknown;
+  },
+  now: Date = new Date(),
+): ClassParseResult {
   const title = String(input.title ?? "").trim();
   if (title.length === 0) return { ok: false, error: "Title is required." };
   if (title.length > 120) {
@@ -55,6 +64,12 @@ export function parseClassInput(input: {
   const startsAtDate = new Date(startsAtRaw);
   if (Number.isNaN(startsAtDate.getTime())) {
     return { ok: false, error: "Start time is not a valid date." };
+  }
+  // Every class listing filters on `starts_at >= now()`, so a past-dated class
+  // would save successfully and then never appear anywhere. Reject it instead
+  // of letting it vanish.
+  if (startsAtDate.getTime() < now.getTime() - PAST_GRACE_MINUTES * 60_000) {
+    return { ok: false, error: "Start time must be in the future." };
   }
 
   const durationMinutes = Number(input.durationMinutes ?? 60);
