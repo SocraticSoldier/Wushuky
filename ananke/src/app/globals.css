@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+/*
+  ANANKE is a single, deliberate aesthetic: cinematic, near-black, lit by one
+  gold. No light/dark toggle — the dark IS the brand. Chiaroscuro: most of the
+  frame is shadow so the gold and the marble read as light breaking in.
+*/
+
+:root {
+  --ink: #0a0a0b; /* near-black base */
+  --ink-raised: #121214; /* cards, raised surfaces */
+  --marble: #ece7dd; /* warm off-white — statue, primary text */
+  --marble-dim: #a7a29a; /* secondary text */
+  --gold: #c9a24b; /* the one accent */
+  --gold-bright: #e7c877; /* highlight / hover */
+  --line: rgba(236, 231, 221, 0.1); /* hairline dividers */
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-ink-raised: var(--ink-raised);
+  --color-marble: var(--marble);
+  --color-marble-dim: var(--marble-dim);
+  --color-gold: var(--gold);
+  --color-gold-bright: var(--gold-bright);
+  --color-line: var(--line);
+
+  --font-display: var(--font-cinzel); /* inscriptional caps — headings */
+  --font-serif: var(--font-cormorant); /* elegant serif — quotes, lede */
+  --font-sans: var(--font-inter); /* clean UI + body */
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--ink);
+  color: var(--marble);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  /* A slow gold light breaking from the top — cinematic key light. */
+  background-image: radial-gradient(
+    120% 80% at 50% -20%,
+    rgba(201, 162, 75, 0.12),
+    transparent 60%
+  );
+  background-attachment: fixed;
+}
+
+/* Subtle film grain so flat panels never look sterile. */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* One gold word inside a heading — the brand's signature move. */
+.gold {
+  color: var(--gold);
+}
+
+.thread {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--gold) 50%,
+    transparent
+  );
+}
