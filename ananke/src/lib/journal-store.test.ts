@@ -4,6 +4,8 @@ import {
   computeStreak,
   dayString,
   getEntries,
+  MAX_ENTRY_CHARS,
+  MAX_PROMPT_CHARS,
   promptForDay,
 } from "./journal-store";
 
@@ -32,6 +34,12 @@ describe("journal store", () => {
 
   it("dayString is a stable YYYY-MM-DD", () => {
     expect(dayString(Date.UTC(2026, 6, 28))).toBe("2026-07-28");
+  });
+
+  it("exposes sane size limits", () => {
+    expect(MAX_ENTRY_CHARS).toBeGreaterThan(0);
+    expect(MAX_PROMPT_CHARS).toBeGreaterThan(0);
+    expect(MAX_ENTRY_CHARS).toBeGreaterThan(MAX_PROMPT_CHARS);
   });
 });
 

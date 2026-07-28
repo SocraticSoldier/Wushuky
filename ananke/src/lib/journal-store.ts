@@ -11,6 +11,11 @@
  * add accounts) and nothing above this file changes.
  */
 
+/** A single entry's body cannot exceed this many characters. */
+export const MAX_ENTRY_CHARS = 8_000;
+/** A prompt shown against an entry cannot exceed this many characters. */
+export const MAX_PROMPT_CHARS = 500;
+
 export interface JournalEntry {
   id: string;
   /** Calendar day in YYYY-MM-DD, used for the streak. */

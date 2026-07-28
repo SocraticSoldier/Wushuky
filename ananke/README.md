@@ -136,6 +136,7 @@ env and redeploy — it stops working immediately, even if unexpired.
 | Reuse a revoked key | `ANANKE_REVOKED` blocks it at unlock. |
 | Steal the session cookie | It's `HttpOnly` + `SameSite=Strict` (+ `Secure` in production). |
 | Probe unlock to learn why a key failed | One identical `invalid_key` for every failure mode. No signal. |
+| Flood the store with a huge entry | Body capped at 64 KB (`413`), entry at 8 000 chars (`400`); oversized keys rejected before hashing. |
 
 These are covered by the test suite: `npm test`.
 
@@ -145,7 +146,10 @@ These are covered by the test suite: `npm test`.
   running server process, keyed by the licence-key id. That is enough to make
   the product real end-to-end while keeping the initialise step dependency-free.
   The store (`src/lib/journal-store.ts`) is a clean seam: swap the `Map` for a
-  Supabase table and nothing above it changes.
+  Supabase table and nothing above it changes. It is keyed by the licence key's
+  `kid`, so **give each person a unique `kid`** when minting — two keys sharing
+  a `kid` would share a journal. (The mint script auto-generates a unique id
+  when you don't pass `--kid`.)
 - **Keys are minted by hand** — perfect for "just me" and onboarding clients one
   at a time. When you want public self-serve signups, replace `mint-key.mjs`
   with a Stripe webhook that mints a key on `checkout.session.completed`.

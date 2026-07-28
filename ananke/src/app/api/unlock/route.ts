@@ -24,7 +24,8 @@ export async function POST(req: NextRequest) {
   } catch {
     return invalid();
   }
-  if (typeof key !== "string") return invalid();
+  // A real key is ~110 chars; anything wildly larger is not worth hashing.
+  if (typeof key !== "string" || key.length > 4096) return invalid();
 
   const now = Math.floor(Date.now() / 1000);
   const result = verifyKey(key, { now });
